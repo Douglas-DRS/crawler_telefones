@@ -9,54 +9,54 @@ URL_AUTOMOVEIS = 'https://django-anuncios.solyd.com.br/automoveis/'
 
 def requisicao(url):
 		try:
-				resposta = requests.get(url)
-				if resposta.status_code == 200:
-						return resposta.text
-				else:
-						print('Erro ao fazer requisição')
+			resposta = requests.get(url)
+			if resposta.status_code == 200:
+					return resposta.text
+			else:
+					print('Erro ao fazer requisição')
 		except Exception as error:
-					print('Ocorreu um erro inesperado')
-					print(error)
+				print('Ocorreu um erro inesperado')
+				print(error)
 
 
 def parsing(resposta_html):
 		try:
-				soup = BeautifulSoup(resposta_html, 'html.parser')
-				return soup
+			soup = BeautifulSoup(resposta_html, 'html.parser')
+			return soup
 		except Exception as error:
-				print('Erro ao fazer parsing do HTML')
-				print(error)
+			print('Erro ao fazer parsing do HTML')
+			print(error)
 
 
 def encontrar_links(soup):
 		try:
-				cards_pai = soup.find('div', class_='ui three doubling link cards')
-				cards = cards_pai.find_all('a')
+			cards_pai = soup.find('div', class_='ui three doubling link cards')
+			cards = cards_pai.find_all('a')
 		except:
-				print("Erro ao encontrar links")
-				return None
+			print("Erro ao encontrar links")
+			return None
 
 		links= []
 		for card in cards:
 			try:
-					link = card['href']
-					links.append(link)
+				link = card['href']
+				links.append(link)
 			except:
-					pass
+				pass
 
 		return links
 
 
 def encontrar_telefone(soup):
 		try:
-				descricao = soup.find_all('div', class_='sixteen wide column')[2].p.get_text().strip()
+			descricao = soup.find_all('div', class_='sixteen wide column')[2].p.get_text().strip()
 		except:
-				print('Erro ao encontrar descricao')
-				return None
+			print('Erro ao encontrar descricao')
+			return None
 	  
 		regex = re.findall(r"\(?0?([1-9]{2})[ \-\.\)]{0,2}(9[ \-\.]?\d{4})[ \-\.]?(\d{4})", str(descricao))
 		if regex:
-				return regex
+			return regex
 		
 
 resposta_busca = requisicao(URL_AUTOMOVEIS)
