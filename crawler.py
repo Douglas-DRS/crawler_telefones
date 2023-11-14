@@ -80,6 +80,17 @@ def descobrir_telefones():
 					for telefone in telefones:
 						print('Telefone encontrado:', telefone)
 						TELEFONES.append(telefone)
+						salvar_telefone(telefone)
+
+
+def salvar_telefone(telefone):
+	string_telefone = '{}{}{}\n'.format(telefone[0], telefone[1], telefone[2])
+	try:
+		with open('telefones.csv', 'a') as arquivo:
+			arquivo.write(string_telefone)
+	except Exception as error:
+		print('Erro ao salvar arquivo')
+		print(error)
 
 
 if __name__ == '__main__':
@@ -88,18 +99,16 @@ if __name__ == '__main__':
 		soup_busca = parsing(resposta_busca)
 		if soup_busca:
 			LINKS = encontrar_links(soup_busca)
-			descobrir_telefones()
+		
+			THREADS = []
+			for i in range(10):
+				t = threading.Thread(target=descobrir_telefones)
+				THREADS.append(t)
 
-			thread_1 = threading.Thread(target=descobrir_telefones)
-			thread_2 = threading.Thread(target=descobrir_telefones)
-			thread_3 = threading.Thread(target=descobrir_telefones)
+			for t in THREADS:
+				t.start()
+			
+			for t in THREADS:
+				t.join()
 
-			thread_1.start()
-			thread_2.start()
-			thread_3.start()
-
-			thread_1.join()
-			thread_2.join()
-			thread_2.join()
-
-			print(TELEFONES)
+			print('Telefones encontrados:', len(TELEFONES))
